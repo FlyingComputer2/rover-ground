@@ -1,0 +1,5 @@
+wireguard/*.conf
+!wireguard/*.example
+
+# Scratch plans; never tracked.
+aidocs/

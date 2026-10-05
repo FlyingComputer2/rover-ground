@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=GS video receiver
+Comment=Start sdl_stream_receiver when the desktop session opens
+Exec=/home/ubuntu/development/rover-ground/receiver/start.sh
+Terminal=false
+X-GNOME-Autostart-enabled=true

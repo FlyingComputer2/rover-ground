@@ -1,0 +1,21 @@
+# Ground station WireGuard server (iface winject). Copy to /etc/wireguard/winject.conf
+# and fill in keys from a secure source; never commit private keys.
+# GS 192.168.128.1/24; peers rover and rover-nuc. No NAT (rover has no internet via GS).
+# Rover WG reaches this host through its manager bind 127.0.0.1:22180; this manager
+# delivers GS-side WG traffic to 127.0.0.1:51820 (upstream 0).
+
+[Interface]
+Address = 192.168.128.1/24
+ListenPort = 51820
+PrivateKey = <from /etc/wireguard/winject.conf>
+MTU = 1280
+
+[Peer]
+# H3 rover
+PublicKey = <from /etc/wireguard/winject.conf>
+AllowedIPs = 192.168.128.2/32
+
+[Peer]
+# rover-nuc
+PublicKey = <from /etc/wireguard/winject.conf>
+AllowedIPs = 192.168.128.3/32

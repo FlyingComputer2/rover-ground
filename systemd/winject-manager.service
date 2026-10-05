@@ -1,0 +1,16 @@
+[Unit]
+Description=winject-l3 manager on GS
+StartLimitIntervalSec=0
+After=network.target winject-radio-realtek.service wg-quick@winject.service
+Wants=wg-quick@winject.service
+BindsTo=winject-radio-realtek.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/ubuntu/development/rover-ground/winject-manager
+ExecStart=/home/ubuntu/development/rover-ground/winject-manager/start.sh
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
