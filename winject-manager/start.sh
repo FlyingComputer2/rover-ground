@@ -9,7 +9,8 @@ RADIO_CONSOLE="127.0.0.1:2201"
 wait_udp_bind() {
     local i
     for i in $(seq 1 30); do
-        if ss -H -uln sport = :2201 | grep -q '^127.0.0.1:2201'; then
+        # ss prints the state first (UNCONN ...); match the local-address column.
+        if ss -H -uln sport = :2201 | awk '$4 == "127.0.0.1:2201" { found = 1 } END { exit !found }'; then
             return 0
         fi
         sleep 1

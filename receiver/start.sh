@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
-# Desktop session: wait for WG address, then run sdl_stream_receiver with restarts.
+# Wait for the WG address, then run sdl_stream_receiver with restarts.
+# RECEIVER_DISPLAY: sdl (desktop session, default) or kmsdrm (headless; see gs-video-receiver.service).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BIN="${SDL_STREAM_RECEIVER:-/home/ubuntu/development/vstreamer/out/gs/src/apps/sdl_stream_receiver/sdl_stream_receiver}"
 WG_ADDR="192.168.128.1"
 IFACE="winject"
+DISPLAY_MODE="${RECEIVER_DISPLAY:-sdl}"
 
 wait_wg_address() {
     local i
@@ -26,7 +28,7 @@ while true; do
         --listen 127.0.0.1:21082 \
         --max-datagram 1445 \
         --console "${WG_ADDR}:5091" \
-        --display sdl \
+        --display "$DISPLAY_MODE" \
         || true
     sleep 2
 done
