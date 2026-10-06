@@ -1,0 +1,26 @@
+[Unit]
+Description=GS video receiver (sdl_stream_receiver, KMS/DRM on HDMI)
+StartLimitIntervalSec=0
+After=winject-manager.service systemd-user-sessions.service getty@tty1.service
+# The receiver takes tty1 for KD_GRAPHICS; the login prompt would draw over the video.
+Conflicts=getty@tty1.service
+
+[Service]
+Type=simple
+User=ubuntu
+SupplementaryGroups=video render
+Environment=RECEIVER_DISPLAY=kmsdrm
+ExecStart=/home/ubuntu/development/rover-ground/receiver/start.sh
+# systemd hands tty1 to the service as its controlling terminal (owned by User=), so the
+# receiver can open it read-write and switch it to KD_GRAPHICS without root.
+TTYPath=/dev/tty1
+StandardInput=tty
+StandardOutput=journal
+StandardError=journal
+TTYReset=yes
+TTYVHangup=yes
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

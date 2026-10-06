@@ -45,4 +45,6 @@ ensure_wfb_driver_for_iface() {
 
 ensure_wfb_driver_for_iface
 nmcli device set "$IFACE" managed no 2>/dev/null || true
-exec "$BIN" "${ROOT}/radio.cfg"
+# radio.cfg names txpower.csv relative to the working directory.
+cd "$ROOT"
+exec "$BIN" --config "${ROOT}/radio.cfg"

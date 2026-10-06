@@ -34,6 +34,11 @@ Same upstream ids on both ends; buses swap at the peer.
 | Sender console (rover) | `192.168.128.2:5090` | rover-side |
 
 Air: channel **13**, **OFDM_54M**, power **20**, domain **0xB00B**, `max_rate_kbps = 80000`.
+`winject-manager/config.cfg` currently carries the bench override (**OFDM_36M**, power **2**: at
+short range 20 dBm overloads the receiver); restore 54M / 20 in the field.
+
+Both managers must run winject-l3 **v1.0.1** or later: the LC header carries the FEC flag and
+the FEC shard header is 5 bytes, which v1.0.0 cannot read.
 Use `--max-datagram 1445` on all vstreamer apps.
 
 ## Build

@@ -17,6 +17,8 @@ install -m 0644 "${ROOT}/systemd/winject-radio-realtek.service" \
     /etc/systemd/system/winject-radio-realtek.service
 install -m 0644 "${ROOT}/systemd/winject-manager.service" \
     /etc/systemd/system/winject-manager.service
+install -m 0644 "${ROOT}/systemd/gs-video-receiver.service" \
+    /etc/systemd/system/gs-video-receiver.service
 install -d /etc/systemd/system/wg-quick@winject.service.d
 install -m 0644 "${ROOT}/systemd/wg-quick@winject.service.d/override.conf" \
     /etc/systemd/system/wg-quick@winject.service.d/override.conf
@@ -56,4 +58,11 @@ ss -uln | grep -E ':2201|:2424' || echo "warning: expected UDP 127.0.0.1:2201 an
 echo lur | nc -u -w1 192.168.128.1 2424 || echo "warning: manager console lur failed"
 ping -c3 -W2 192.168.128.2 || echo "warning: ping 192.168.128.2 failed"
 
-echo "Video: run ${ROOT}/receiver/start.sh from a desktop session (or log in for autostart)."
+# Headless GS (no desktop session to run the autostart entry): the receiver unit drives HDMI
+# through KMS/DRM on tty1.
+if [[ "$(systemctl get-default)" == "multi-user.target" ]]; then
+    enable_restart gs-video-receiver.service
+    echo "Video: gs-video-receiver.service (KMS/DRM on tty1)."
+else
+    echo "Video: run ${ROOT}/receiver/start.sh from a desktop session (or log in for autostart)."
+fi
