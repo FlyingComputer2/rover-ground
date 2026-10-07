@@ -19,6 +19,29 @@ Same upstream ids on both ends; buses swap at the peer.
 |----|--------|--------------------|------------------------|-------------|
 | 0 | WireGuard | `a1` / `b2`, connect `127.0.0.1:51820` | `b2` / `a1`, bind `127.0.0.1:22180` | RS k=1 n=3 |
 | 1 | Video RTP + reverse telemetry | `d4` / `c3`, connect `127.0.0.1:21082` | `c3` / `d4`, bind `127.0.0.1:22081` | NONE |
+| 2 | Radio link-test probe (LC loss / bench) | `e5` / `f6`, connect `127.0.0.1:21100` | `e5` / `f6`, bind `127.0.0.1:22100` | NONE |
+
+## Radio link test (upstream 2)
+
+Dedicated probe stream for **air-RX gap / loss** work (`lur ids=2`, `air_rx_loss_char --upstream 2`).
+Do not use the video upstream for link metrics.
+
+**GS**
+
+```bash
+# sink (keeps manager client path up; optional systemd unit)
+./scripts/link_test_sink.py --bind 127.0.0.1:21100
+
+# after rover sender is running
+./scripts/air_rx_loss_char.sh --duration 90
+```
+
+**Rover** — merge `winject-manager/rover.config.cfg.example` into the live manager config,
+restart `winject-manager`, then:
+
+```bash
+./scripts/link_test_sender.py --dest 127.0.0.1:22100 --kbps 12000
+```
 
 ## Ports
 
@@ -30,6 +53,8 @@ Same upstream ids on both ends; buses swap at the peer.
 | Manager console | `192.168.128.1:2424` | UDP, replies to source |
 | Video app (GS) | listen `127.0.0.1:21082` | `sdl_stream_receiver` |
 | Video app (rover) | peer `127.0.0.1:22081` | `uvc_stream_sender` |
+| Link-test sink (GS) | `127.0.0.1:21100` | upstream 2 `connect_address` |
+| Link-test inject (rover) | bind `127.0.0.1:22100` | upstream 2 `bind_address` |
 | Receiver console | `192.168.128.1:5091` | vstreamer metrics |
 | Sender console (rover) | `192.168.128.2:5090` | rover-side |
 
@@ -99,6 +124,8 @@ Mirror upstreams with buses swapped and server binds on the rover host:
 
 - Upstream 0: `tx_bus = b2`, `rx_bus = a1`, bind `127.0.0.1:22180`, FEC RS k=1 n=3
 - Upstream 1: `tx_bus = c3`, `rx_bus = d4`, bind `127.0.0.1:22081`, `fec.type = NONE`
+- Upstream 2: `tx_bus = e5`, `rx_bus = f6`, bind `127.0.0.1:22100`, `fec.type = NONE`
+  (`scripts/link_test_sender.py` into that bind)
 - Same air settings: channel 13, `OFDM_54M`, `max_rate_kbps = 80000`, domain `0xB00B`
 - Use `winject.dplane_port` and `net.dplane_port` (not legacy `inject_port` / `forward_port`)
 - Manager console: bind `192.168.128.2:2424`
