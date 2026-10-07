@@ -1,0 +1,20 @@
+# Install on the rover (H3). Sends into upstream-2 bind 127.0.0.1:22100.
+# Copy to rover and enable after merging rover.config.cfg.example into manager config.
+#
+#   sudo cp winject-link-test-sender.service.example /etc/systemd/system/winject-link-test-sender.service
+#   sudo systemctl enable --now winject-link-test-sender.service
+
+[Unit]
+Description=winject link-test UDP sender (rover upstream 2)
+After=network.target winject-manager.service
+PartOf=winject-manager.service
+
+[Service]
+Type=simple
+WorkingDirectory=/path/to/rover-ground
+ExecStart=/usr/bin/python3 scripts/link_test_sender.py --dest 127.0.0.1:22100 --kbps 12000
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

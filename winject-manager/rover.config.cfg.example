@@ -1,0 +1,18 @@
+# Rover winject-manager fragment — pair with GS config.cfg on the H3.
+# Merge into the rover's live manager config and restart winject-manager.
+#
+# Upstream 0: WG (bind 127.0.0.1:22180, buses b2/a1, FEC RS 1/3).
+# Upstream 1: video to GS (bind 127.0.0.1:22081, tx c3 / rx d4, FEC none).
+# Upstream 2: radio link-test probe (bind 127.0.0.1:22100, tx e5 / rx f6, FEC none).
+
+upstream.size = 3
+
+upstream-2.mode             = UDP_SERVER_FORWARDING
+upstream-2.fec.type         = NONE
+upstream-2.tx_bus           = e5
+upstream-2.rx_bus           = f6
+upstream-2.scheduler_budget = 4096
+upstream-2.bind_address     = 127.0.0.1:22100
+
+# Run on rover (systemd or bench):
+#   scripts/link_test_sender.py --bind 127.0.0.1:22100 --kbps 12000

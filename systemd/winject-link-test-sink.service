@@ -1,0 +1,13 @@
+[Unit]
+Description=winject link-test UDP sink (GS upstream 2)
+After=network.target winject-manager.service
+PartOf=winject-manager.service
+
+[Service]
+Type=simple
+ExecStart=/home/ubuntu/development/rover-ground/scripts/link_test_sink.py --bind 127.0.0.1:21100 --quiet
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
